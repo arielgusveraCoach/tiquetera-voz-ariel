@@ -1,0 +1,16 @@
+[
+  {
+    "numero": "T-001",
+    "fecha": "2026-11-19",
+    "hora": "15:11",
+    "hora_origen": "Hora real de grabación (corregida, antes decía 18:00)",
+    "quien": "Sucursal La 13",
+    "equipo": "Lunix",
+    "motivo": "Chequeo / mantenimiento de Lunix, apagaron equipos para testear reinicio",
+    "diagnostico": "A constatar",
+    "estado": "Pendiente",
+    "prioridad": "Media",
+    "relato": "Hola desde la sucursal 13 están haciendo chequeo los chicos de Lunix y por ese motivo apagaron los equipos y te estamos testeando que al reiniciarlos ya levantó todo, están haciendo una tarea de mantenimiento",
+    "creado": "2026-11-19T18:11:09.193Z"
+  }
+]
