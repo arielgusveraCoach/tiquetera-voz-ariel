@@ -1,157 +1,204 @@
 <!doctype html>
 <html lang="es">
-
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Tiquetera Ariel — Voz + Manual</title>
-  <!-- Supabase JS Client versión 2.44.4 (Fijada) -->
+  
+  <!-- Soporte PWA y Móvil (Android + iPhone) -->
+  <meta name="theme-color" content="#111827">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Tiquetera Ariel">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+  <!-- Librería oficial Supabase JS (versión 2.44.4 fijada) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.44.4"></script>
+
   <style>
+    :root {
+      --bg: #f3f4f6;
+      --card-bg: #ffffff;
+      --text: #111827;
+      --text-muted: #4b5563;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-active: #1e40af;
+      --border: #e5e7eb;
+      --header-bg: #111827;
+      --radius: 14px;
+      --safe-bottom: env(safe-area-inset-bottom, 16px);
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    
     body {
-      font-family: system-ui, Arial, sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       margin: 0;
-      background: #f4f6f8;
-      color: #111;
+      background: var(--bg);
+      color: var(--text);
+      padding-bottom: calc(var(--safe-bottom) + 80px);
+      line-height: 1.45;
     }
 
     header {
-      background: #111827;
+      background: var(--header-bg);
       color: #fff;
-      padding: 16px;
+      padding: 16px 18px;
+      padding-top: max(16px, env(safe-area-inset-top));
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
-
     header h1 {
       margin: 0;
-      font-size: 22px;
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
     }
-
     header p {
       margin: 4px 0 0;
       opacity: .85;
-      font-size: 14px;
+      font-size: 13px;
     }
 
     .wrap {
       max-width: 820px;
       margin: auto;
-      padding: 14px;
+      padding: 12px;
     }
 
     .card {
-      background: #fff;
-      border-radius: 14px;
+      background: var(--card-bg);
+      border-radius: var(--radius);
       padding: 16px;
       margin-bottom: 14px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, .06);
+      box-shadow: 0 2px 8px rgba(0,0,0,.05);
+      border: 1px solid rgba(0,0,0,.04);
     }
 
     .tabs {
       display: flex;
       gap: 8px;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
-
     .tabs button {
       flex: 1;
-      padding: 14px;
+      min-height: 48px;
+      padding: 12px 14px;
       border-radius: 12px;
       border: 2px solid #111827;
       background: #fff;
       font-size: 16px;
       font-weight: 700;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all .15s ease;
     }
-
     .tabs button.active {
       background: #111827;
       color: #fff;
     }
+    .tabs button:active {
+      transform: scale(0.98);
+    }
 
     .big {
       width: 100%;
-      padding: 16px;
+      min-height: 50px;
+      padding: 14px 18px;
       border-radius: 12px;
       border: 0;
-      background: #2563eb;
+      background: var(--primary);
       color: #fff;
-      font-size: 18px;
-      font-weight: 800;
+      font-size: 17px;
+      font-weight: 700;
       cursor: pointer;
       margin: 8px 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      touch-action: manipulation;
+      transition: background .15s ease, transform .1s ease;
     }
-
+    .big:active {
+      transform: scale(0.98);
+      background: var(--primary-active);
+    }
     .big.secondary {
       background: #e5e7eb;
-      color: #111;
+      color: #111827;
+    }
+    .big.secondary:active {
+      background: #d1d5db;
+    }
+    .big.success {
+      background: #16a34a;
+      color: #fff;
     }
 
     .muted {
-      color: #4b5563;
+      color: var(--text-muted);
       font-size: 13px;
       line-height: 1.4;
     }
 
     #conexion {
-      padding: 12px;
+      padding: 12px 14px;
       border-radius: 10px;
       margin-bottom: 14px;
-      font-size: 14px;
+      font-size: 13.5px;
       line-height: 1.45;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
     }
-
-    #conexion.muted {
-      background: #f3f4f6;
-      color: #374151;
-      border: 1px solid #e5e7eb;
-    }
-
-    #conexion.ok {
-      background: #dcfce7;
-      color: #166534;
-      border: 1px solid #86efac;
-    }
-
-    #conexion.warn {
-      background: #fef3c7;
-      color: #92400e;
-      border: 1px solid #fcd34d;
-    }
-
-    #conexion.err {
-      background: #fee2e2;
-      color: #991b1b;
-      border: 1px solid #fca5a5;
-    }
-
+    #conexion.muted { background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; }
+    #conexion.ok { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+    #conexion.warn { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+    #conexion.err { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
     #conexion code {
-      background: rgba(0, 0, 0, .06);
+      background: rgba(0,0,0,.06);
       padding: 2px 5px;
       border-radius: 4px;
       font-family: Consolas, monospace;
+      font-size: 12px;
     }
 
     label {
       display: block;
       font-size: 13px;
       font-weight: 700;
-      margin: 10px 0 4px;
+      margin: 12px 0 5px;
+      color: #374151;
     }
 
-    input,
-    select,
-    textarea {
+    /* Input con 16px para evitar auto-zoom molesto en iOS Safari */
+    input, select, textarea {
       width: 100%;
+      min-height: 48px;
       padding: 12px;
-      border: 1px solid #ddd;
+      border: 1px solid #d1d5db;
       border-radius: 10px;
-      font-size: 15px;
+      font-size: 16px;
       box-sizing: border-box;
       font-family: inherit;
+      background: #fff;
+      color: #111827;
+      transition: border-color .15s ease, box-shadow .15s ease;
     }
-
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
     textarea {
-      min-height: 80px;
+      min-height: 90px;
       resize: vertical;
     }
 
@@ -160,821 +207,1342 @@
       grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
+    @media (max-width: 480px) {
+      .row { grid-template-columns: 1fr; gap: 4px; }
+    }
 
+    /* Banner reactivo de detección de fecha por voz */
+    #bannerVozDetectada {
+      display: none;
+      background: #eff6ff;
+      border: 1.5px solid #93c5fd;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin: 10px 0;
+      animation: fadeIn .2s ease;
+    }
+    #bannerVozDetectada p {
+      margin: 0 0 8px;
+      font-size: 14px;
+      color: #1e40af;
+      font-weight: 500;
+    }
+    .banner-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .banner-actions button {
+      flex: 1;
+      min-height: 42px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13.5px;
+      cursor: pointer;
+      border: 0;
+    }
+    .banner-btn-ok { background: #2563eb; color: #fff; }
+    .banner-btn-cancel { background: #e5e7eb; color: #374151; }
+
+    /* Tarjetas de Tickets */
     .ticket {
       border: 1px solid #e5e7eb;
       border-radius: 12px;
       padding: 14px;
       margin-top: 12px;
       background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,.03);
+      transition: transform .1s ease, box-shadow .1s ease;
     }
-
+    .ticket:active {
+      background: #fafafa;
+    }
+    .ticket-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .ticket-num {
+      font-size: 17px;
+      font-weight: 800;
+      color: #111827;
+    }
     .pill {
       display: inline-block;
       padding: 4px 10px;
       border-radius: 999px;
-      background: #fef3c7;
-      color: #92400e;
       font-size: 12px;
       font-weight: 700;
     }
+    .pill.pendiente { background: #fef3c7; color: #92400e; }
+    .pill.en-curso { background: #dbeafe; color: #1e40af; }
+    .pill.resuelto { background: #dcfce7; color: #166534; }
+    .pill.sincro-warn { background: #fee2e2; color: #991b1b; }
 
     .actions {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
       margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid #f3f4f6;
     }
-
-    .actions button,
-    .actions a {
-      padding: 10px 12px;
+    .actions button, .actions a {
+      flex: 1 1 calc(50% - 8px);
+      min-height: 44px;
+      padding: 10px 10px;
       border-radius: 10px;
-      border: 1px solid #ddd;
+      border: 1px solid #e5e7eb;
       background: #f9fafb;
       cursor: pointer;
       text-decoration: none;
-      color: #111;
+      color: #111827;
+      font-size: 13.5px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background .12s ease;
+    }
+    @media (min-width: 600px) {
+      .actions button, .actions a { flex: initial; }
+    }
+    .actions button:active, .actions a:active {
+      background: #e5e7eb;
+    }
+    .btn-delete {
+      color: #b91c1c !important;
+      border-color: #fecaca !important;
+      background: #fef2f2 !important;
+    }
+    .btn-delete:active { background: #fee2e2 !important; }
+
+    /* Indicador de edición activa */
+    #avisoEdicion {
+      display: none;
+      background: #fef3c7;
+      border: 1px solid #fcd34d;
+      color: #92400e;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #avisoEdicion button {
+      background: #fff;
+      border: 1px solid #fcd34d;
+      color: #92400e;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Botón flotante accesible (FAB) para celular */
+    .fab-voz {
+      position: fixed;
+      bottom: calc(var(--safe-bottom) + 14px);
+      right: 16px;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: #2563eb;
+      color: #fff;
+      border: 0;
+      box-shadow: 0 4px 14px rgba(37,99,235,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 90;
+      transition: transform .15s ease, background .15s ease;
+    }
+    .fab-voz:active {
+      transform: scale(0.92);
+      background: #1d4ed8;
+    }
+
+    /* Sistema de Toasts no bloqueantes */
+    #toast-container {
+      position: fixed;
+      bottom: calc(var(--safe-bottom) + 80px);
+      left: 14px;
+      right: 14px;
+      max-width: 440px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 1000;
+      pointer-events: none;
+    }
+    .toast {
+      pointer-events: auto;
+      background: #111827;
+      color: #fff;
+      padding: 14px 16px;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.22);
       font-size: 14px;
       font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      opacity: 0;
+      transform: translateY(16px);
+      animation: toastIn .22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .toast.ok { background: #065f46; color: #ecfdf5; border-left: 5px solid #10b981; }
+    .toast.warn { background: #92400e; color: #fffbeb; border-left: 5px solid #f59e0b; }
+    .toast.err { background: #991b1b; color: #fef2f2; border-left: 5px solid #ef4444; }
+    .toast.info { background: #1e3a8a; color: #eff6ff; border-left: 5px solid #3b82f6; }
+    .toast-close {
+      background: transparent;
+      border: 0;
+      color: inherit;
+      font-size: 18px;
+      line-height: 1;
+      opacity: .75;
+      cursor: pointer;
+      padding: 4px;
     }
 
-    .actions button:hover,
-    .actions a:hover {
-      background: #f3f4f6;
+    @keyframes toastIn {
+      to { opacity: 1; transform: translateY(0); }
     }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Diálogo Modal de confirmación táctil */
+    #modalConfirm {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(2px);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 2000;
+      padding: 14px;
+      padding-bottom: calc(var(--safe-bottom) + 14px);
+    }
+    @media (min-width: 500px) {
+      #modalConfirm { align-items: center; }
+    }
+    .modal-box {
+      background: #fff;
+      border-radius: 18px;
+      padding: 20px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.3);
+      animation: modalSlideUp .2s ease;
+    }
+    @keyframes modalSlideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .modal-box h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      color: #111827;
+    }
+    .modal-box p {
+      margin: 0 0 18px;
+      font-size: 14.5px;
+      color: #4b5563;
+      line-height: 1.4;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+    }
+    .modal-actions button {
+      flex: 1;
+      min-height: 48px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      border: 0;
+      cursor: pointer;
+    }
+    .modal-btn-confirm { background: #2563eb; color: #fff; }
+    .modal-btn-confirm.destructive { background: #dc2626; color: #fff; }
+    .modal-btn-cancel { background: #e5e7eb; color: #374151; }
   </style>
 </head>
-
 <body>
 
-  <header>
-    <h1>Tiquetera Ariel — Voz + Manual</h1>
-    <p>Guardado en la nube (Supabase) · Hablá o escribí, la hora queda como fue.</p>
-  </header>
+<header>
+  <h1>Tiquetera Ariel — Voz + Manual</h1>
+  <p>Guardado seguro en la nube (Supabase) · Funciona offline · PWA móvil</p>
+</header>
 
-  <div class="wrap">
-    <!-- Tarjeta Formulario -->
-    <div class="card">
-      <div id="conexion" class="muted">⏳ Conectando con Supabase...</div>
+<div class="wrap">
+  <!-- Tarjeta de Carga / Formulario -->
+  <div class="card">
+    <div id="conexion" class="muted">⏳ Conectando con Supabase...</div>
 
-      <div class="tabs">
-        <button id="tabVoz" class="active" onclick="setModo('voz')">🎤 Por Voz</button>
-        <button id="tabManual" onclick="setModo('manual')">✍️ Manual</button>
-      </div>
-
-      <p class="muted" id="modoTxt">Modo Voz: apretá grabar, contá qué pasó. La hora se pone sola con la hora real.</p>
-      <button class="big" onclick="grabar()">🎤 Hablar ticket</button>
-      <button class="big secondary" onclick="grabar(true)">Probar micrófono</button>
-      <p id="estadoMicro" class="muted">Estado micrófono: Sin probar</p>
-
-      <p><b>Hora real de grabación: <span id="horaReal">—</span></b> <span
-          class="muted">(America/Argentina/Buenos_Aires)</span></p>
-
-      <label>N° Ticket</label>
-      <input id="numero" value="">
-
-      <div class="row">
-        <div>
-          <label>Fecha</label>
-          <input id="fecha" type="date">
-        </div>
-        <div>
-          <label>Hora</label>
-          <input id="hora" type="time">
-        </div>
-      </div>
-
-      <label>Quién llamó / Sucursal</label>
-      <input id="quien" placeholder="Ej: Sucursal La 13">
-
-      <label>Equipo</label>
-      <input id="equipo" placeholder="Ej: Lunix, Impresora">
-
-      <label>Motivo / Problema (resumen)</label>
-      <input id="motivo" placeholder="Ej: Chequeo de Lunix, apagaron equipos">
-
-      <label>Diagnóstico / Qué se constató</label>
-      <input id="diagnostico" placeholder="A constatar">
-
-      <div class="row">
-        <div>
-          <label>Estado</label>
-          <select id="estado">
-            <option>Pendiente</option>
-            <option>En curso</option>
-            <option>Resuelto</option>
-          </select>
-        </div>
-        <div>
-          <label>Prioridad</label>
-          <select id="prioridad">
-            <option>Media</option>
-            <option>Baja</option>
-            <option>Alta</option>
-            <option>Urgente</option>
-          </select>
-        </div>
-      </div>
-
-      <label>Relato completo</label>
-      <textarea id="relato" placeholder="Contá tal cual pasó..."></textarea>
-
-      <button class="big secondary" onclick="usarHoraActual()">⏰ Usar hora actual</button>
-      <button class="big" onclick="guardar()">💾 Generar y Guardar en Supabase</button>
-      <p class="muted">Si decís "ayer a las 18" te pregunto si querés usar esa hora. Si no decís hora, queda la actual.
-      </p>
+    <!-- Aviso si estamos editando un ticket existente -->
+    <div id="avisoEdicion">
+      <span>✏️ Editando <b id="edicionNumero">T-XXX</b></span>
+      <button onclick="cancelarEdicion()">✕ Cancelar edición</button>
     </div>
 
-    <!-- Tarjeta Lista de Tickets -->
-    <div class="card">
-      <h3 style="margin:0" id="tituloLista">Tickets guardados</h3>
-
-      <label>Buscar</label>
-      <input id="buscar" placeholder="Buscar por sucursal, equipo, motivo..." oninput="render()">
-
-      <label>Filtrar por estado</label>
-      <select id="filtro" onchange="render()">
-        <option value="">Todos</option>
-        <option>Pendiente</option>
-        <option>En curso</option>
-        <option>Resuelto</option>
-      </select>
-
-      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;">
-        <button class="big secondary" style="flex: 2; min-width: 140px; margin: 0;" onclick="cargar()">🔄
-          Recargar</button>
-        <button class="big secondary" style="flex: 1; min-width: 140px; margin: 0;" onclick="importarJSON()"
-          title="Subir un archivo tickets.json para unificar">📥 Importar JSON</button>
-        <button class="big secondary" style="flex: 1; min-width: 140px; margin: 0;" onclick="exportarJSON()"
-          title="Descargar copia de tickets.json">📤 Exportar JSON</button>
-      </div>
-      <div id="lista"></div>
+    <div class="tabs">
+      <button id="tabVoz" class="active" onclick="setModo('voz')">🎤 Por Voz</button>
+      <button id="tabManual" onclick="setModo('manual')">✍️ Manual</button>
     </div>
+
+    <p class="muted" id="modoTxt">Modo Voz: tocá el botón, contá qué pasó y la hora se pone sola con la hora de Argentina.</p>
+    
+    <button class="big" id="btnGrabar" onclick="grabar()">🎤 Hablar ticket</button>
+    <button class="big secondary" onclick="grabar(true)">Probar micrófono</button>
+    <p id="estadoMicro" class="muted">Estado micrófono: Sin probar</p>
+
+    <!-- Banner interactivo no invasivo cuando se detecta hora relativa -->
+    <div id="bannerVozDetectada">
+      <p id="bannerVozTexto">🕒 Detecté una hora en tu relato.</p>
+      <div class="banner-actions">
+        <button class="banner-btn-ok" id="btnAplicarHoraVoz">Usar fecha/hora dicha</button>
+        <button class="banner-btn-cancel" onclick="cerrarBannerVoz()">Dejar actual</button>
+      </div>
+    </div>
+
+    <p><b>Hora real de grabación: <span id="horaReal">—</span></b> <span class="muted">(Buenos Aires, UTC-3)</span></p>
+
+    <label for="numero">N° Ticket</label>
+    <input id="numero" value="" placeholder="Ej: T-001">
+
+    <div class="row">
+      <div>
+        <label for="fecha">Fecha</label>
+        <input id="fecha" type="date">
+      </div>
+      <div>
+        <label for="hora">Hora</label>
+        <input id="hora" type="time">
+      </div>
+    </div>
+
+    <label for="quien">Quién llamó / Sucursal</label>
+    <input id="quien" placeholder="Ej: Sucursal La 13">
+
+    <label for="equipo">Equipo(s) detectado(s)</label>
+    <input id="equipo" placeholder="Ej: Lunix, Impresora, PC">
+
+    <label for="motivo">Motivo / Problema (resumen)</label>
+    <input id="motivo" placeholder="Ej: Chequeo de Lunix, reinicio de terminales">
+
+    <label for="diagnostico">Diagnóstico / Qué se constató</label>
+    <input id="diagnostico" placeholder="A constatar">
+
+    <div class="row">
+      <div>
+        <label for="estado">Estado</label>
+        <select id="estado">
+          <option>Pendiente</option>
+          <option>En curso</option>
+          <option>Resuelto</option>
+        </select>
+      </div>
+      <div>
+        <label for="prioridad">Prioridad</label>
+        <select id="prioridad">
+          <option>Media</option>
+          <option>Baja</option>
+          <option>Alta</option>
+          <option>Urgente</option>
+        </select>
+      </div>
+    </div>
+
+    <label for="relato">Relato completo</label>
+    <textarea id="relato" placeholder="Contá tal cual pasó..."></textarea>
+
+    <button class="big secondary" onclick="usarHoraActual()">⏰ Poner hora actual</button>
+    <button class="big" id="btnGuardar" onclick="guardar()">💾 Generar y Guardar Ticket</button>
+    <p class="muted">Si decís "ayer a las 18" te pregunto mediante un aviso si querés usar esa fecha y hora. Si no, queda la actual.</p>
   </div>
 
-  <script>
-    // =========================================================================================
-    // 1. CONFIGURACIÓN DE CONEXIÓN A SUPABASE
-    // =========================================================================================
-    // 1. URL de tu proyecto:
-    // OJO: El Project Ref (las letras entre https:// y .supabase.co) tiene SIEMPRE exactamente 20 caracteres.
-    const SUPABASE_URL = "https://kcuuyyuzyaadcdypktiu.supabase.co";
+  <!-- Tarjeta de Listado de tickets -->
+  <div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+      <h3 style="margin:0" id="tituloLista">Tickets registrados</h3>
+      <span id="contadorTickets" class="muted" style="font-weight:600;">0 tickets</span>
+    </div>
+    
+    <label for="buscar">Buscar</label>
+    <input id="buscar" placeholder="Buscar por número, sucursal, equipo, motivo..." oninput="render()">
 
-    // 2. Tu clave de API pública de Supabase:
-    // Puede ser la Publishable key moderna (sb_publishable_...) de 46 caracteres o la Legacy anon key (eyJ...).
-    const SUPABASE_ANON_KEY = "sb_publishable_v4cUGUosRSJ9UwOTu-WtqQ_f7GwCZ7n";
-    // =========================================================================================
+    <label for="filtro">Filtrar por estado</label>
+    <select id="filtro" onchange="render()">
+      <option value="">Todos</option>
+      <option>Pendiente</option>
+      <option>En curso</option>
+      <option>Resuelto</option>
+    </select>
 
-    let supabaseClient = null;
-    let conexionEstado = 'iniciando'; // 'iniciando' | 'ok' | 'local'
-    let tickets = [];
+    <button class="big secondary" onclick="cargar()">🔄 Recargar / Sincronizar con Supabase</button>
+    <div id="lista"></div>
+  </div>
+</div>
 
-    // Mensajes de estado en la interfaz
-    function conexionMsg(html, cls) {
-      const el = document.getElementById('conexion');
-      if (el) {
-        el.innerHTML = html;
-        el.className = cls || 'muted';
-      }
+<!-- Botón flotante para celular (permite dictar ticket con el pulgar) -->
+<button class="fab-voz" title="Grabar ticket por voz" onclick="grabar()" aria-label="Hablar ticket">🎤</button>
+
+<!-- Contenedor de Toasts no bloqueantes -->
+<div id="toast-container" aria-live="polite"></div>
+
+<!-- Modal de confirmación táctil -->
+<div id="modalConfirm">
+  <div class="modal-box">
+    <h3 id="modalTitulo">¿Confirmar acción?</h3>
+    <p id="modalMensaje">¿Estás seguro de continuar?</p>
+    <div class="modal-actions">
+      <button class="modal-btn-cancel" id="btnModalCancelar">Cancelar</button>
+      <button class="modal-btn-confirm" id="btnModalConfirmar">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// =========================================================================================
+// 1. CONFIGURACIÓN DE CONEXIÓN A SUPABASE
+// =========================================================================================
+const SUPABASE_URL = "https://kcuuyyuzyaadcdypktiu.supabase.co";
+// Clave anon o publishable key (moderna sb_publishable_... o legacy eyJ...)
+const SUPABASE_ANON_KEY = "sb_publishable_v4cUGUosRSJ9UwOTu-WtqQ_f7GwCZ7n";
+// =========================================================================================
+
+let supabaseClient = null;
+let conexionEstado = 'iniciando'; // 'iniciando' | 'ok' | 'local'
+let tickets = [];
+let ticketEnEdicion = null; // Almacena el ticket completo si se está editando
+
+// =========================================================================================
+// 2. SISTEMA DE TOASTS Y MODALES (Reemplaza alert y confirm bloqueantes)
+// =========================================================================================
+function mostrarToast(mensaje, tipo = 'info', duracion = 3200) {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  toast.className = 'toast ' + tipo;
+  
+  const icon = tipo === 'ok' ? '✅' : (tipo === 'err' ? '❌' : (tipo === 'warn' ? '⚠️' : 'ℹ️'));
+  toast.innerHTML = `
+    <span><b>${icon}</b> ${mensaje}</span>
+    <button class="toast-close" aria-label="Cerrar">×</button>
+  `;
+
+  const btnClose = toast.querySelector('.toast-close');
+  const remover = () => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(12px)';
+    setTimeout(() => { if (toast.parentNode) toast.remove(); }, 200);
+  };
+  btnClose.onclick = remover;
+
+  container.appendChild(toast);
+  setTimeout(remover, duracion);
+}
+
+function mostrarConfirmacion({ titulo, mensaje, textoOk = 'Aceptar', textoCancelar = 'Cancelar', destructivo = false }) {
+  return new Promise(resolve => {
+    const modal = document.getElementById('modalConfirm');
+    const elTitulo = document.getElementById('modalTitulo');
+    const elMensaje = document.getElementById('modalMensaje');
+    const btnOk = document.getElementById('btnModalConfirmar');
+    const btnCancel = document.getElementById('btnModalCancelar');
+
+    elTitulo.textContent = titulo;
+    elMensaje.textContent = mensaje;
+    btnOk.textContent = textoOk;
+    btnCancel.textContent = textoCancelar;
+    btnOk.className = 'modal-btn-confirm' + (destructivo ? ' destructive' : '');
+
+    const cerrar = (resultado) => {
+      modal.style.display = 'none';
+      btnOk.onclick = null;
+      btnCancel.onclick = null;
+      modal.onclick = null;
+      resolve(resultado);
+    };
+
+    btnOk.onclick = () => cerrar(true);
+    btnCancel.onclick = () => cerrar(false);
+    modal.onclick = (e) => {
+      if (e.target === modal) cerrar(false);
+    };
+
+    modal.style.display = 'flex';
+  });
+}
+
+// Banner interactivo para confirmación de fecha detectada por voz
+let accionHoraVoz = null;
+function mostrarBannerDeteccionHora(textoOriginal, fNueva, hNueva) {
+  const banner = document.getElementById('bannerVozDetectada');
+  const txt = document.getElementById('bannerVozTexto');
+  const btn = document.getElementById('btnAplicarHoraVoz');
+  if (!banner || !txt || !btn) return;
+
+  txt.innerHTML = `🕒 Detecté en el relato: <b>"${textoOriginal}"</b>.<br>¿Querés usar la fecha <b>${fNueva}</b> y hora <b>${hNueva}</b>?`;
+  
+  accionHoraVoz = () => {
+    document.getElementById('fecha').value = fNueva;
+    document.getElementById('hora').value = hNueva;
+    document.getElementById('horaReal').textContent = hNueva + ' (' + textoOriginal + ')';
+    mostrarToast('Fecha y hora actualizadas a ' + fNueva + ' ' + hNueva, 'ok');
+    cerrarBannerVoz();
+  };
+
+  btn.onclick = accionHoraVoz;
+  banner.style.display = 'block';
+}
+
+function cerrarBannerVoz() {
+  const banner = document.getElementById('bannerVozDetectada');
+  if (banner) banner.style.display = 'none';
+  accionHoraVoz = null;
+}
+
+// =========================================================================================
+// 3. CONEXIÓN, REST Y HEADERS ROBUSTOS (Legacy JWT eyJ... vs Publishable sb_publishable_...)
+// =========================================================================================
+function conexionMsg(html, cls) {
+  const el = document.getElementById('conexion');
+  if (el) {
+    el.innerHTML = html;
+    el.className = cls || 'muted';
+  }
+}
+
+// Genera los headers correctos según el tipo de clave de Supabase
+function getSupabaseHeaders() {
+  const headers = {
+    "apikey": SUPABASE_ANON_KEY,
+    "Content-Type": "application/json"
+  };
+  // REGLA CRÍTICA: Solo agregamos 'Authorization: Bearer' si es un JWT legado (comienza con eyJ...).
+  // Las claves modernas publishable (sb_publishable_...) NO son JWT y causan error 401 si van en Authorization.
+  if (SUPABASE_ANON_KEY && SUPABASE_ANON_KEY.startsWith("eyJ")) {
+    headers["Authorization"] = "Bearer " + SUPABASE_ANON_KEY;
+  }
+  return headers;
+}
+
+function urlBaseSupabase() {
+  return (SUPABASE_URL || '').replace(/\/+$/, '');
+}
+
+// Operaciones por REST directo (Fallback completo sin depender del SDK)
+async function restFetch(path, options = {}) {
+  const url = urlBaseSupabase() + path;
+  const mergedHeaders = Object.assign(getSupabaseHeaders(), options.headers || {});
+  const res = await fetch(url, { ...options, headers: mergedHeaders });
+  if (!res.ok) {
+    const errText = await res.text();
+    const err = new Error("REST " + res.status + ": " + (errText || res.statusText));
+    err.status = res.status;
+    throw err;
+  }
+  const contentType = res.headers.get("content-type");
+  if (contentType && contentType.includes("application/json")) {
+    return await res.json();
+  }
+  return null;
+}
+
+// Cargar por REST
+async function cargarPorREST() {
+  try {
+    const data = await restFetch("/rest/v1/tickets?select=*&order=creado_en.desc");
+    procesarTicketsRecibidos(data, "REST directo");
+  } catch(eREST) {
+    clasificarYDiagnosticarError(eREST, "REST directo");
+  }
+}
+
+// =========================================================================================
+// 4. GESTIÓN LOCAL, NÚMEROS DE TICKET Y SINCRONIZACIÓN
+// =========================================================================================
+function cargarModoLocal() {
+  try {
+    const raw = localStorage.getItem('tickets_ariel');
+    tickets = raw ? JSON.parse(raw) : [];
+  } catch(e) {
+    console.warn("Error leyendo localStorage:", e);
+    tickets = [];
+  }
+  actualizarSiguienteNumero();
+  render();
+}
+
+// Cálculo del siguiente número evitando colisiones con unique(numero)
+function actualizarSiguienteNumero() {
+  const numInput = document.getElementById('numero');
+  if (!numInput) return;
+  // Si estamos editando un ticket existente, no alteramos su número
+  if (ticketEnEdicion) return;
+
+  const nums = (tickets || []).map(x => parseInt(String(x.numero || '').replace(/\D/g, ''), 10) || 0);
+  const histMax = parseInt(localStorage.getItem('tiquetera_max_num') || '0', 10);
+  const maxNum = Math.max(0, histMax, ...nums);
+
+  let siguiente = maxNum + 1;
+  let candidato = 'T-' + String(siguiente).padStart(3, '0');
+
+  // Asegurar que no colisione con ningún ticket ya existente en la lista
+  while ((tickets || []).some(x => x.numero === candidato)) {
+    siguiente++;
+    candidato = 'T-' + String(siguiente).padStart(3, '0');
+  }
+
+  numInput.value = candidato;
+  localStorage.setItem('tiquetera_max_num', String(Math.max(histMax, siguiente - 1)));
+}
+
+// Procesa datos recibidos de la nube y preserva tickets locales pendientes de sincronizar
+function procesarTicketsRecibidos(data, viaNombre) {
+  const ticketsNube = (data || []).map(tt => ({
+    numero: tt.numero,
+    fecha: tt.fecha,
+    hora: String(tt.hora || '').slice(0, 5),
+    quien: tt.quien || '',
+    equipo: tt.equipo || '',
+    motivo: tt.motivo || '',
+    diagnostico: tt.diagnostico || 'A constatar',
+    estado: tt.estado || 'Pendiente',
+    prioridad: tt.prioridad || 'Media',
+    relato: tt.relato || '',
+    _id: tt.id,
+    _pendienteSincro: false
+  }));
+
+  // Preservar tickets que se hayan creado localmente sin conexión y aún no existan en Supabase
+  const localesPendientes = (tickets || []).filter(loc => loc._pendienteSincro || !loc._id);
+  const combinados = [...ticketsNube];
+
+  for (const loc of localesPendientes) {
+    const yaExiste = combinados.some(n => n.numero === loc.numero || (loc._id && n._id === loc._id));
+    if (!yaExiste) {
+      combinados.unshift(loc);
     }
+  }
 
-    // Cargar tickets desde la memoria local del navegador (localStorage)
-    function cargarModoLocal() {
-      try {
-        const raw = localStorage.getItem('tickets_ariel');
-        tickets = raw ? JSON.parse(raw) : [];
-      } catch (e) {
-        console.warn("Error leyendo localStorage:", e);
-        tickets = [];
-      }
-      actualizarSiguienteNumero();
-      render();
-    }
+  tickets = combinados;
+  localStorage.setItem('tickets_ariel', JSON.stringify(tickets));
+  conexionEstado = 'ok';
+  conexionMsg("✅ Conectado a Supabase (" + viaNombre + "). Los tickets se guardan en la nube.", "ok");
+  actualizarSiguienteNumero();
+  render();
 
-    // Cálculo automático del siguiente número de ticket (T-001, T-002, etc.)
-    function actualizarSiguienteNumero() {
-      const numInput = document.getElementById('numero');
-      if (!numInput) return;
-      if (!tickets || tickets.length === 0) {
-        numInput.value = 'T-001';
-      } else {
-        // Buscar solo tickets que sigan el patrón T-XXX para no desfasar la numeración con identificadores antiguos (ej: ALV-xxxx)
-        const tNums = tickets
-          .map(x => {
-            const m = String(x.numero || '').match(/^T-(\d+)/i);
-            return m ? parseInt(m[1], 10) : 0;
-          })
-          .filter(n => n > 0);
-        const maxNum = tNums.length > 0 ? Math.max(0, ...tNums) : 0;
-        numInput.value = 'T-' + String(maxNum + 1).padStart(3, '0');
-      }
-    }
+  // Intentar sincronizar en segundo plano los tickets creados offline
+  sincronizarTicketsOffline();
+}
 
-    // Diagnóstico inteligente y clasificación del error para mostrar qué hacer
-    function clasificarYDiagnosticarError(error, via) {
-      conexionEstado = 'local';
-      cargarModoLocal();
+// Sincroniza hacia la nube los tickets guardados mientras no había conexión
+async function sincronizarTicketsOffline() {
+  const pendientes = tickets.filter(t => t._pendienteSincro || !t._id);
+  if (pendientes.length === 0 || conexionEstado !== 'ok') return;
 
-      const msg = (error && (error.message || error.toString())) || "";
-      const code = (error && (error.code || error.status)) || "";
-
-      // Inspeccionar el subdominio configurado
-      let refHost = "";
-      try {
-        const u = new URL(SUPABASE_URL);
-        refHost = u.hostname.replace('.supabase.co', '');
-      } catch (e) {
-        refHost = SUPABASE_URL;
-      }
-      const largoRef = refHost.length;
-
-      // CASO A: No llega al servidor / Error de DNS / NXDOMAIN (Failed to fetch)
-      if (msg.includes("Failed to fetch") || msg.includes("NetworkError") || msg.includes("Load failed") || msg.includes("ERR_NAME_NOT_RESOLVED") || msg.includes("NXDOMAIN")) {
-        let pista = "";
-        if (largoRef === 19) {
-          pista = `⚠️ <b>CAUSA RAÍZ DETECTADA:</b> Tu Project Ref actual (<code>${refHost}</code>) mide <b>19 caracteres</b>. En Supabase TODOS los Project Refs miden <b>exactamente 20 caracteres</b>. Falta 1 letra o número. Verificalo en Supabase Dashboard > Project Settings > Data API y corregí la URL en la línea 170.`;
-        } else if (largoRef !== 20) {
-          pista = `⚠️ <b>ATENCIÓN:</b> El Project Ref tiene <b>${largoRef} caracteres</b> en lugar de los 20 reglamentarios de Supabase.`;
-        } else {
-          pista = `ℹ️ El subdominio <code>${refHost}.supabase.co</code> no responde en internet (NXDOMAIN). Si tu ref es correcto, verificá en Supabase si el proyecto no fue recreado.`;
-        }
-
-        conexionMsg(`
-      <b>❌ No se puede conectar con Supabase (Error de DNS / Red: Failed to fetch)</b><br>
-      Vía intentada: ${via || 'SDK y REST'}.<br>
-      ${pista}<br><br>
-      <b>📱 MODO LOCAL ACTIVO:</b> La app sigue funcionando normalmente con la memoria de tu dispositivo (localStorage). No vas a perder tus tickets.
-    `, "err");
-        return;
-      }
-
-      // CASO B1: Permisos de tabla en Postgres (Código 42501 - permission denied for table tickets)
-      if (code === "42501" || msg.includes("42501") || msg.toLowerCase().includes("permission denied")) {
-        conexionMsg(`
-          <b>❌ Faltan permisos en la base de datos (Error 42501: permission denied)</b><br>
-          ¡La conexión y tu clave son correctas! Pero el rol público no tiene permiso sobre la tabla <code>tickets</code>.<br>
-          👉 Entrá a <b>Supabase Dashboard > SQL Editor > New query</b>, pegá esto y dale a <b>Run</b>:<br>
-          <code>GRANT ALL ON TABLE public.tickets TO anon, authenticated;</code><br>
-          <code>GRANT USAGE ON SCHEMA public TO anon, authenticated;</code><br><br>
-          <b>📱 MODO LOCAL ACTIVO:</b> Podés seguir cargando tickets en este dispositivo.
-        `, "warn");
-        return;
-      }
-
-      // CASO B2: Clave inválida / 401 Unauthorized
-      if (code == 401 || msg.includes("401") || msg.toLowerCase().includes("unauthorized") || msg.toLowerCase().includes("invalid api key") || msg.toLowerCase().includes("jwt")) {
-        conexionMsg(`
-      <b>❌ Error de clave en Supabase (401 Unauthorized)</b><br>
-      El servidor respondió, pero la clave fue rechazada.<br>
-      👉 Verificá copiar la Publishable key (<code>sb_publishable_...</code> de 46 caracteres) o la anon public key desde Supabase > Project Settings > API Keys.<br>
-      <b>📱 MODO LOCAL ACTIVO:</b> Podés seguir cargando tickets en este dispositivo.
-    `, "err");
-        return;
-      }
-
-      // CASO C: Tabla tickets no existe en Supabase (código 42P01)
-      if (code === "42P01" || msg.includes("relation \"tickets\" does not exist") || (msg.includes("tickets") && msg.includes("not exist"))) {
-        conexionMsg(`
-      <b>❌ Conectó a Supabase, pero la tabla 'tickets' no existe</b><br>
-      👉 Entrá a Supabase Dashboard > SQL Editor > New query, pegá todo el contenido de <code>Schema-Supabase.sql</code> y apretá <b>Run</b>.<br>
-      <b>📱 MODO LOCAL ACTIVO:</b> Mientras tanto la app guarda localmente.
-    `, "err");
-        return;
-      }
-
-      // CASO D: Error de permisos / Row Level Security (RLS)
-      if (msg.toLowerCase().includes("row-level security") || msg.toLowerCase().includes("policy")) {
-        conexionMsg(`
-      <b>❌ Error de permisos RLS (Row Level Security) en Supabase</b><br>
-      La tabla existe pero las políticas no permiten insertar o leer.<br>
-      👉 Ejecutá el paso 3 de <code>Schema-Supabase.sql</code> en el SQL Editor de Supabase.<br>
-      <b>📱 MODO LOCAL ACTIVO:</b> Tus datos están a salvo localmente.
-    `, "err");
-        return;
-      }
-
-      // CASO E: Otro error genérico
-      conexionMsg(`
-    <b>❌ Error Supabase:</b> <code>${msg}</code> (Código: ${code})<br>
-    <b>📱 MODO LOCAL ACTIVO:</b> La app sigue funcionando en tu dispositivo.
-  `, "err");
-    }
-
-    // Fallback por REST directo (compatible con Publishable key y con Legacy anon key)
-    async function cargarPorREST() {
-      try {
-        const isPublishable = SUPABASE_ANON_KEY.startsWith("sb_publishable_");
-        const headers = {
-          "apikey": SUPABASE_ANON_KEY
-        };
-        // Solo enviamos 'Authorization: Bearer' si es un JWT tradicional (eyJ...),
-        // porque las claves publishable no son JWT y harían fallar a PostgREST si van en Bearer.
-        if (!isPublishable && SUPABASE_ANON_KEY.startsWith("eyJ")) {
-          headers["Authorization"] = "Bearer " + SUPABASE_ANON_KEY;
-        }
-
-        const res = await fetch(SUPABASE_URL + "/rest/v1/tickets?select=*&order=creado_en.desc", { headers });
-        if (!res.ok) {
-          const errText = await res.text();
-          let errCode = "";
-          let errMsg = errText;
-          try {
-            const parsed = JSON.parse(errText);
-            if (parsed.code) errCode = parsed.code;
-            if (parsed.message) errMsg = parsed.message;
-          } catch (e) { }
-          const err = new Error(errMsg);
-          err.status = res.status;
-          err.code = errCode;
-          throw err;
-        }
-
-        const data = await res.json();
-        tickets = (data || []).map(tt => ({
-          numero: tt.numero,
-          fecha: tt.fecha,
-          hora: String(tt.hora || '').slice(0, 5),
-          quien: tt.quien || '',
-          equipo: tt.equipo || '',
-          motivo: tt.motivo || '',
-          diagnostico: tt.diagnostico || 'A constatar',
-          estado: tt.estado || 'Pendiente',
-          prioridad: tt.prioridad || 'Media',
-          relato: tt.relato || '',
-          _id: tt.id
-        }));
-
-        // Sincronizar respaldo en local
-        localStorage.setItem('tickets_ariel', JSON.stringify(tickets));
-        conexionEstado = 'ok';
-        conexionMsg("✅ Conectado a Supabase por REST. Los tickets se guardan en la nube.", "ok");
-        actualizarSiguienteNumero();
-        render();
-      } catch (eREST) {
-        clasificarYDiagnosticarError(eREST, "REST directo");
-      }
-    }
-
-    // Carga principal con supabase-js y 5 reintentos
-    async function cargar() {
-      if (!SUPABASE_URL.startsWith("http") || SUPABASE_ANON_KEY.includes("PEGA_ACA")) {
-        conexionMsg("⚠️ Falta configurar Supabase: pegá tu URL y clave en index.html. La app funciona en modo local.", "warn");
-        conexionEstado = 'local';
-        cargarModoLocal();
-        return;
-      }
-
-      // Inicializar cliente SDK si aún no existe
-      if (!supabaseClient && window.supabase) {
-        try {
-          supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        } catch (errInit) {
-          console.warn("Fallo al crear cliente supabase-js:", errInit);
-          await cargarPorREST();
-          return;
-        }
-      }
-
-      let data = null, error = null;
-      for (let intento = 1; intento <= 5; intento++) {
-        conexionMsg("⏳ Conectando con Supabase... (intento " + intento + "/5)", "muted");
-        try {
-          if (supabaseClient) {
-            const r = await supabaseClient.from('tickets').select('*').order('creado_en', { ascending: false });
-            data = r.data;
-            error = r.error;
-            if (!error) break;
-          } else {
-            error = new Error("SDK supabase-js no disponible");
-            break;
-          }
-        } catch (ex) {
-          error = ex;
-        }
-        if (intento < 5) await new Promise(res => setTimeout(res, 2000));
-      }
-
-      // Si falló el SDK, intentamos por REST antes de rendirnos
-      if (error) {
-        console.warn("supabase-js falló en los 5 intentos. Probando fallback REST...", error);
-        await cargarPorREST();
-        return;
-      }
-
-      // ¡Conexión comprobada con éxito!
-      conexionEstado = 'ok';
-      conexionMsg("✅ Conectado a Supabase. Los tickets se guardan en la nube.", "ok");
-
-      tickets = (data || []).map(t => ({
+  for (const t of pendientes) {
+    try {
+      const payload = {
         numero: t.numero,
         fecha: t.fecha,
-        hora: String(t.hora || '').slice(0, 5),
-        quien: t.quien || '',
-        equipo: t.equipo || '',
-        motivo: t.motivo || '',
-        diagnostico: t.diagnostico || 'A constatar',
-        estado: t.estado || 'Pendiente',
-        prioridad: t.prioridad || 'Media',
-        relato: t.relato || '',
-        _id: t.id
-      }));
-
-      // Sincronización automática de respaldo local a Supabase si hubiese tickets creados offline
-      try {
-        const rawLocal = localStorage.getItem('tickets_ariel');
-        if (rawLocal && supabaseClient) {
-          const localTickets = JSON.parse(rawLocal);
-          const faltantes = localTickets.filter(loc => loc.numero && !tickets.some(n => n.numero === loc.numero));
-          if (faltantes.length > 0) {
-            for (const f of faltantes) {
-              await supabaseClient.from('tickets').insert([{
-                numero: f.numero,
-                fecha: f.fecha,
-                hora: f.hora,
-                quien: f.quien,
-                equipo: f.equipo,
-                motivo: f.motivo,
-                diagnostico: f.diagnostico,
-                estado: f.estado,
-                prioridad: f.prioridad,
-                relato: f.relato
-              }]);
-            }
-            // Recargar para incluir los recién subidos
-            const rRe = await supabaseClient.from('tickets').select('*').order('creado_en', { ascending: false });
-            if (rRe.data) {
-              tickets = rRe.data.map(t => ({
-                numero: t.numero,
-                fecha: t.fecha,
-                hora: String(t.hora || '').slice(0, 5),
-                quien: t.quien || '',
-                equipo: t.equipo || '',
-                motivo: t.motivo || '',
-                diagnostico: t.diagnostico || 'A constatar',
-                estado: t.estado || 'Pendiente',
-                prioridad: t.prioridad || 'Media',
-                relato: t.relato || '',
-                _id: t.id
-              }));
-            }
-          }
-        }
-      } catch (errSync) {
-        console.warn("Sincronización local:", errSync);
-      }
-
-      // Respaldar copia local por si se corta la conexión
-      localStorage.setItem('tickets_ariel', JSON.stringify(tickets));
-      actualizarSiguienteNumero();
-      render();
-    }
-
-    // Guardado seguro: en Supabase si está disponible, o en local si no hay conexión
-    async function guardar() {
-      const t = {
-        numero: document.getElementById('numero').value || 'T-001',
-        fecha: document.getElementById('fecha').value,
-        hora: document.getElementById('hora').value,
-        quien: document.getElementById('quien').value,
-        equipo: document.getElementById('equipo').value,
-        motivo: document.getElementById('motivo').value,
-        diagnostico: document.getElementById('diagnostico').value || 'A constatar',
-        estado: document.getElementById('estado').value,
-        prioridad: document.getElementById('prioridad').value,
-        relato: document.getElementById('relato').value
+        hora: t.hora,
+        quien: t.quien,
+        equipo: t.equipo,
+        motivo: t.motivo,
+        diagnostico: t.diagnostico,
+        estado: t.estado,
+        prioridad: t.prioridad,
+        relato: t.relato
       };
 
-      if (!t.fecha || !t.hora || !t.relato) {
-        alert('Faltan Fecha, Hora o Relato.');
-        return;
+      let idNube = null;
+      if (supabaseClient) {
+        const { data, error } = await supabaseClient.from('tickets').insert([payload]).select();
+        if (!error && data && data[0]) idNube = data[0].id;
+      } else {
+        const dataRest = await restFetch("/rest/v1/tickets", {
+          method: 'POST',
+          headers: { "Prefer": "return=representation" },
+          body: JSON.stringify(payload)
+        });
+        if (dataRest && dataRest[0]) idNube = dataRest[0].id;
       }
 
-      // Si no está conectado con la nube, guardar de inmediato en local
-      if (conexionEstado !== 'ok' || !supabaseClient) {
-        guardarEnLocal(t, false);
-        return;
+      if (idNube) {
+        t._id = idNube;
+        t._pendienteSincro = false;
+        mostrarToast('Ticket ' + t.numero + ' sincronizado con Supabase', 'ok', 2500);
       }
+    } catch(e) {
+      console.warn("Reintento de sincronización offline pospuesto:", e);
+      break;
+    }
+  }
+  localStorage.setItem('tickets_ariel', JSON.stringify(tickets));
+  render();
+}
 
-      // Intentar guardar en Supabase
-      try {
-        const { data, error } = await supabaseClient.from('tickets').insert([{
-          numero: t.numero,
-          fecha: t.fecha,
-          hora: t.hora,
-          quien: t.quien,
-          equipo: t.equipo,
-          motivo: t.motivo,
-          diagnostico: t.diagnostico,
-          estado: t.estado,
-          prioridad: t.prioridad,
-          relato: t.relato
-        }]).select();
+// Diagnóstico de errores
+function clasificarYDiagnosticarError(error, via) {
+  conexionEstado = 'local';
+  cargarModoLocal();
 
+  const msg = (error && (error.message || error.toString())) || "";
+  const code = (error && (error.code || error.status)) || "";
+
+  let refHost = "";
+  try {
+    const u = new URL(SUPABASE_URL);
+    refHost = u.hostname.replace('.supabase.co', '');
+  } catch(e) {
+    refHost = SUPABASE_URL;
+  }
+  const largoRef = refHost.length;
+
+  if (msg.includes("Failed to fetch") || msg.includes("NetworkError") || msg.includes("Load failed") || msg.includes("ERR_NAME_NOT_RESOLVED") || msg.includes("NXDOMAIN")) {
+    let pista = "";
+    if (largoRef === 19) {
+      pista = `⚠️ <b>CAUSA RAÍZ DETECTADA:</b> Tu Project Ref actual (<code>${refHost}</code>) tiene <b>19 caracteres</b>. En Supabase TODOS miden <b>20 caracteres</b>. Falta 1 caracter.`;
+    } else if (largoRef !== 20) {
+      pista = `⚠️ <b>ATENCIÓN:</b> El Project Ref tiene <b>${largoRef} caracteres</b> en lugar de 20.`;
+    } else {
+      pista = `ℹ️ El subdominio <code>${refHost}.supabase.co</code> no responde o no hay internet.`;
+    }
+
+    conexionMsg(`
+      <b>❌ Sin conexión con Supabase (Fallo de red / DNS)</b><br>
+      Vía: ${via || 'SDK/REST'}. ${pista}<br>
+      <b>📱 MODO LOCAL ACTIVO:</b> La app guarda en la memoria de tu dispositivo. No vas a perder nada.
+    `, "err");
+    return;
+  }
+
+  if (code == 401 || msg.includes("401") || msg.toLowerCase().includes("unauthorized") || msg.toLowerCase().includes("invalid api key") || msg.toLowerCase().includes("jwt")) {
+    conexionMsg(`
+      <b>❌ Clave rechazada en Supabase (401 Unauthorized)</b><br>
+      Revisá que la clave en index.html sea la publishable (<code>sb_publishable_...</code>) o la anon key (<code>eyJ...</code>).<br>
+      <b>📱 MODO LOCAL ACTIVO:</b> Tus tickets se guardan en el celular.
+    `, "err");
+    return;
+  }
+
+  if (code === "42P01" || msg.includes("relation \"tickets\" does not exist")) {
+    conexionMsg(`
+      <b>❌ La tabla 'tickets' no existe en Supabase</b><br>
+      Ejecutá <code>Schema-Supabase.sql</code> en el SQL Editor de Supabase.<br>
+      <b>📱 MODO LOCAL ACTIVO:</b> Guardando localmente mientras tanto.
+    `, "err");
+    return;
+  }
+
+  conexionMsg(`
+    <b>❌ Error de conexión:</b> <code>${msg}</code><br>
+    <b>📱 MODO LOCAL ACTIVO:</b> La app sigue funcionando normalmente en tu dispositivo.
+  `, "err");
+}
+
+// Carga principal con supabase-js y fallback a REST
+async function cargar() {
+  if (!SUPABASE_URL.startsWith("http") || SUPABASE_ANON_KEY.includes("PEGA_ACA")) {
+    conexionMsg("⚠️ Falta configurar Supabase en index.html. La app funciona en modo local.", "warn");
+    conexionEstado = 'local';
+    cargarModoLocal();
+    return;
+  }
+
+  if (!supabaseClient && window.supabase) {
+    try {
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    } catch(errInit) {
+      console.warn("Fallo al crear cliente supabase-js:", errInit);
+      await cargarPorREST();
+      return;
+    }
+  }
+
+  let data = null, error = null;
+  for (let intento = 1; intento <= 3; intento++) {
+    conexionMsg("⏳ Conectando con Supabase... (intento " + intento + "/3)", "muted");
+    try {
+      if (supabaseClient) {
+        const r = await supabaseClient.from('tickets').select('*').order('creado_en', { ascending: false });
+        data = r.data;
+        error = r.error;
+        if (!error) break;
+      } else {
+        error = new Error("SDK supabase-js no disponible");
+        break;
+      }
+    } catch(ex) {
+      error = ex;
+    }
+    if (intento < 3) await new Promise(res => setTimeout(res, 1200));
+  }
+
+  if (error) {
+    console.warn("supabase-js falló. Probando fallback REST...", error);
+    await cargarPorREST();
+    return;
+  }
+
+  procesarTicketsRecibidos(data, "SDK oficial");
+}
+
+// Guardado seguro (con soporte para edición y preservación de _id)
+async function guardar() {
+  const t = {
+    numero: document.getElementById('numero').value.trim() || 'T-001',
+    fecha: document.getElementById('fecha').value,
+    hora: document.getElementById('hora').value,
+    quien: document.getElementById('quien').value.trim(),
+    equipo: document.getElementById('equipo').value.trim(),
+    motivo: document.getElementById('motivo').value.trim(),
+    diagnostico: document.getElementById('diagnostico').value.trim() || 'A constatar',
+    estado: document.getElementById('estado').value,
+    prioridad: document.getElementById('prioridad').value,
+    relato: document.getElementById('relato').value.trim()
+  };
+
+  if (!t.fecha || !t.hora || !t.relato) {
+    mostrarToast('Faltan Fecha, Hora o Relato.', 'warn');
+    return;
+  }
+
+  // Si estamos editando un ticket existente, conservar su _id
+  if (ticketEnEdicion && ticketEnEdicion._id) {
+    t._id = ticketEnEdicion._id;
+  }
+
+  // Registrar el número en el historial para evitar que el contador retroceda
+  const numInt = parseInt(t.numero.replace(/\D/g, ''), 10) || 0;
+  const histMax = parseInt(localStorage.getItem('tiquetera_max_num') || '0', 10);
+  if (numInt > histMax) {
+    localStorage.setItem('tiquetera_max_num', String(numInt));
+  }
+
+  // Guardado local si no hay conexión
+  if (conexionEstado !== 'ok') {
+    guardarEnLocal(t, false);
+    return;
+  }
+
+  // Guardado en Supabase (Update si ya existe con _id, Insert si es nuevo)
+  try {
+    const payload = {
+      numero: t.numero,
+      fecha: t.fecha,
+      hora: t.hora,
+      quien: t.quien,
+      equipo: t.equipo,
+      motivo: t.motivo,
+      diagnostico: t.diagnostico,
+      estado: t.estado,
+      prioridad: t.prioridad,
+      relato: t.relato
+    };
+
+    let guardadoExitoso = false;
+    let nuevoId = t._id;
+
+    if (t._id) {
+      // ACTUALIZACIÓN DE TICKET EXISTENTE
+      if (supabaseClient) {
+        const { error } = await supabaseClient.from('tickets').update(payload).eq('id', t._id);
         if (error) throw error;
-
-        alert('Ticket ' + t.numero + ' guardado en Supabase con hora ' + t.hora);
-        limpiarCamposFormulario();
-        cargar();
-      } catch (errNube) {
-        console.warn("Fallo al guardar en Supabase, aplicando guardado local de seguridad:", errNube);
-        guardarEnLocal(t, true);
+        guardadoExitoso = true;
+      } else {
+        await restFetch("/rest/v1/tickets?id=eq." + t._id, {
+          method: 'PATCH',
+          headers: { "Prefer": "return=representation" },
+          body: JSON.stringify(payload)
+        });
+        guardadoExitoso = true;
+      }
+    } else {
+      // INSERCIÓN DE NUEVO TICKET
+      if (supabaseClient) {
+        const { data, error } = await supabaseClient.from('tickets').insert([payload]).select();
+        if (error) throw error;
+        if (data && data[0]) nuevoId = data[0].id;
+        guardadoExitoso = true;
+      } else {
+        const dataRest = await restFetch("/rest/v1/tickets", {
+          method: 'POST',
+          headers: { "Prefer": "return=representation" },
+          body: JSON.stringify(payload)
+        });
+        if (dataRest && dataRest[0]) nuevoId = dataRest[0].id;
+        guardadoExitoso = true;
       }
     }
 
-    // Guardar en la memoria del dispositivo (localStorage)
-    function guardarEnLocal(t, falloNube) {
-      const idx = tickets.findIndex(x => x.numero === t.numero);
-      if (idx >= 0) {
-        tickets[idx] = t;
-      } else {
-        tickets.unshift(t);
-      }
-      localStorage.setItem('tickets_ariel', JSON.stringify(tickets));
-      actualizarSiguienteNumero();
-      render();
+    if (guardadoExitoso) {
+      t._id = nuevoId;
+      t._pendienteSincro = false;
+      actualizarTicketEnListaLocal(t);
+      mostrarToast(`Ticket ${t.numero} guardado en Supabase con hora ${t.hora}`, 'ok');
       limpiarCamposFormulario();
+    }
+  } catch(errNube) {
+    console.warn("Fallo al guardar en Supabase, aplicando guardado local de seguridad:", errNube);
+    // Manejo inteligente de colisión con unique (numero)
+    if (errNube && (String(errNube.message || '').includes('tickets_numero_unique') || errNube.code === '23505')) {
+      mostrarToast(`El número ${t.numero} ya existe en Supabase. Asignando nuevo número...`, 'warn', 4000);
+      actualizarSiguienteNumero();
+      t.numero = document.getElementById('numero').value;
+    }
+    guardarEnLocal(t, true);
+  }
+}
 
-      if (falloNube) {
-        alert('⚠️ No se pudo enviar a Supabase en este momento.\nEl ticket ' + t.numero + ' se guardó de forma SEGURA en este dispositivo (modo local) para que no pierdas nada.');
-      } else {
-        alert('Ticket ' + t.numero + ' guardado en modo local (memoria del dispositivo).');
-      }
+// Actualiza o inserta el ticket en la lista local preservando _id
+function actualizarTicketEnListaLocal(t) {
+  const idx = tickets.findIndex(x => (t._id && x._id === t._id) || x.numero === t.numero);
+  if (idx >= 0) {
+    if (!t._id && tickets[idx]._id) t._id = tickets[idx]._id;
+    tickets[idx] = { ...tickets[idx], ...t };
+  } else {
+    tickets.unshift(t);
+  }
+  localStorage.setItem('tickets_ariel', JSON.stringify(tickets));
+  render();
+}
+
+// Guardado seguro en la memoria local del dispositivo
+function guardarEnLocal(t, falloNube) {
+  const idx = tickets.findIndex(x => (t._id && x._id === t._id) || x.numero === t.numero);
+  if (idx >= 0) {
+    // PRESERVACIÓN CLAVE: No perder el _id de Supabase si ya existía
+    if (!t._id && tickets[idx]._id) {
+      t._id = tickets[idx]._id;
+    }
+    t._pendienteSincro = falloNube || (!tickets[idx]._id);
+    tickets[idx] = { ...tickets[idx], ...t };
+  } else {
+    t._pendienteSincro = falloNube || (!t._id);
+    tickets.unshift(t);
+  }
+
+  localStorage.setItem('tickets_ariel', JSON.stringify(tickets));
+  actualizarSiguienteNumero();
+  render();
+  limpiarCamposFormulario();
+
+  if (falloNube) {
+    mostrarToast(`⚠️ No se pudo enviar a Supabase. ${t.numero} se guardó de forma SEGURA en tu celu.`, 'warn', 4500);
+  } else {
+    mostrarToast(`Ticket ${t.numero} guardado en modo local.`, 'ok');
+  }
+}
+
+function limpiarCamposFormulario() {
+  document.getElementById('quien').value = '';
+  document.getElementById('equipo').value = '';
+  document.getElementById('motivo').value = '';
+  document.getElementById('diagnostico').value = '';
+  document.getElementById('relato').value = '';
+  ticketEnEdicion = null;
+  document.getElementById('avisoEdicion').style.display = 'none';
+  document.getElementById('btnGuardar').textContent = '💾 Generar y Guardar Ticket';
+  usarHoraActual();
+  actualizarSiguienteNumero();
+}
+
+function cancelarEdicion() {
+  limpiarCamposFormulario();
+  mostrarToast('Edición cancelada.', 'info');
+}
+
+// Cargar ticket en el formulario para editar
+function editarTicket(t) {
+  ticketEnEdicion = t;
+  document.getElementById('numero').value = t.numero;
+  document.getElementById('fecha').value = t.fecha;
+  document.getElementById('hora').value = t.hora;
+  document.getElementById('quien').value = t.quien || '';
+  document.getElementById('equipo').value = t.equipo || '';
+  document.getElementById('motivo').value = t.motivo || '';
+  document.getElementById('diagnostico').value = t.diagnostico || 'A constatar';
+  document.getElementById('estado').value = t.estado || 'Pendiente';
+  document.getElementById('prioridad').value = t.prioridad || 'Media';
+  document.getElementById('relato').value = t.relato || '';
+  
+  document.getElementById('edicionNumero').textContent = t.numero;
+  document.getElementById('avisoEdicion').style.display = 'flex';
+  document.getElementById('btnGuardar').textContent = '💾 Guardar Cambios en ' + t.numero;
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  mostrarToast('Editando ticket ' + t.numero, 'info');
+}
+
+// =========================================================================================
+// 5. FECHA Y HORA EN ZONA HORARIA DE ARGENTINA (Sin desfases por UTC)
+// =========================================================================================
+function obtenerFechaArgentina(diasOffset = 0) {
+  const ahora = new Date();
+  const dtf = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Argentina/Buenos_Aires',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+  const partes = dtf.format(ahora).split('-');
+  const anio = parseInt(partes[0], 10);
+  const mes = parseInt(partes[1], 10) - 1;
+  const dia = parseInt(partes[2], 10);
+
+  // Usamos mediodía local para ser inmunes a cambios de horario de verano o UTC
+  const d = new Date(anio, mes, dia + diasOffset, 12, 0, 0);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function ahora() {
+  const d = new Date();
+  return {
+    f: d.toLocaleDateString('en-CA', { timeZone: 'America/Argentina/Buenos_Aires' }),
+    h: d.toLocaleTimeString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour: '2-digit', minute: '2-digit', hour12: false })
+  };
+}
+
+function usarHoraActual() {
+  const a = ahora();
+  document.getElementById('fecha').value = a.f;
+  document.getElementById('hora').value = a.h;
+  document.getElementById('horaReal').textContent = a.h + ' del ' + a.f;
+}
+usarHoraActual();
+
+// Alternar pestañas Voz / Manual
+function setModo(m) {
+  document.getElementById('tabVoz').classList.toggle('active', m === 'voz');
+  document.getElementById('tabManual').classList.toggle('active', m === 'manual');
+  document.getElementById('modoTxt').textContent = m === 'voz'
+    ? 'Modo Voz: tocá el botón, contá qué pasó y la hora se pone sola con la hora de Argentina.'
+    : 'Modo Manual: completá los campos a mano. Tocá Poner hora actual para la hora de Argentina.';
+}
+
+function setEstado(t) {
+  document.getElementById('estadoMicro').textContent = 'Estado micrófono: ' + t;
+}
+
+// =========================================================================================
+// 6. RECONOCIMIENTO DE VOZ Y EXTRACCIÓN ROBUSTA DE DATOS
+// =========================================================================================
+function grabar(soloPrueba = false) {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    setEstado('Tu navegador no soporta Web Speech API. Usá Google Chrome o completá en Modo Manual.');
+    mostrarToast('Este navegador no admite dictado por voz. Usá Chrome o modo Manual.', 'warn', 4500);
+    return;
+  }
+
+  const r = new SR();
+  r.lang = 'es-AR';
+  r.interimResults = false;
+  r.maxAlternatives = 1;
+
+  setEstado('Escuchando... hablá ahora');
+  mostrarToast('🎙️ Escuchando... podés hablar ahora', 'info', 2500);
+
+  r.onresult = e => {
+    if (!e.results || !e.results[0] || !e.results[0][0]) return;
+    const texto = e.results[0][0].transcript;
+    setEstado('Entendido: "' + texto + '"');
+
+    if (soloPrueba) {
+      mostrarToast('Micrófono OK. Se entendió: "' + texto + '"', 'ok', 4000);
+      return;
     }
 
-    // Limpiar formulario tras guardar
-    function limpiarCamposFormulario() {
-      document.getElementById('quien').value = '';
-      document.getElementById('equipo').value = '';
-      document.getElementById('motivo').value = '';
-      document.getElementById('diagnostico').value = '';
-      document.getElementById('relato').value = '';
-      usarHoraActual();
+    document.getElementById('relato').value = texto;
+    const low = texto.toLowerCase();
+
+    // 1. Detección automática de Sucursal
+    const mS = low.match(/(sucursal|la)\s*(\d+)/i);
+    if (mS) {
+      document.getElementById('quien').value = 'Sucursal La ' + mS[2];
     }
 
-    // Funciones de Fecha y Hora (Argentina)
-    function ahora() {
-      const d = new Date();
-      return {
-        f: d.toLocaleDateString('en-CA', { timeZone: 'America/Argentina/Buenos_Aires' }),
-        h: d.toLocaleTimeString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour: '2-digit', minute: '2-digit', hour12: false })
-      };
+    // 2. Detección múltiple de Equipos (sin sobreescribir ni perder menciones)
+    const equiposEncontrados = [];
+    if (/lunix|unix/i.test(low)) equiposEncontrados.push('Lunix');
+    if (/impresora|fiscal|ticketera/i.test(low)) equiposEncontrados.push('Impresora');
+    if (/pc|computadora|notebook|cpu/i.test(low)) equiposEncontrados.push('PC');
+    if (/servidor|server/i.test(low)) equiposEncontrados.push('Servidor');
+    if (/red|internet|router|switch|wifi|wi-fi/i.test(low)) equiposEncontrados.push('Red/Router');
+    if (/posnet|pos|terminal/i.test(low)) equiposEncontrados.push('Posnet');
+    if (/escaner|escáner|lector/i.test(low)) equiposEncontrados.push('Escáner');
+    if (/balanza/i.test(low)) equiposEncontrados.push('Balanza');
+
+    if (equiposEncontrados.length > 0) {
+      const unicos = [...new Set(equiposEncontrados)];
+      document.getElementById('equipo').value = unicos.join(', ');
     }
 
-    function usarHoraActual() {
-      const a = ahora();
-      document.getElementById('fecha').value = a.f;
-      document.getElementById('hora').value = a.h;
-      document.getElementById('horaReal').textContent = a.h + ' del ' + a.f;
-    }
-    usarHoraActual();
+    // 3. Resumen inteligente del motivo
+    document.getElementById('motivo').value = texto.length > 110 ? texto.slice(0, 110) + '...' : texto;
 
-    // Alternar pestañas Voz / Manual
-    function setModo(m) {
-      document.getElementById('tabVoz').classList.toggle('active', m === 'voz');
-      document.getElementById('tabManual').classList.toggle('active', m === 'manual');
-      document.getElementById('modoTxt').textContent = m === 'voz'
-        ? 'Modo Voz: apretá grabar, contá qué pasó. La hora se pone sola con la hora real.'
-        : 'Modo Manual: escribí los campos a mano. Apretá Usar hora actual para poner la hora real.';
+    // 4. Detección de fecha y hora relativa en ZONA HORARIA DE ARGENTINA
+    const mH = texto.match(/(ayer|hoy).*?(\d{1,2})(?::(\d{2}))?/i);
+    if (mH) {
+      const relativo = mH[1].toLowerCase();
+      const fDetectada = obtenerFechaArgentina(relativo === 'ayer' ? -1 : 0);
+      const hDetectada = mH[2].padStart(2, '0') + ':' + (mH[3] || '00');
+      mostrarBannerDeteccionHora(mH[0], fDetectada, hDetectada);
+    } else {
+      cerrarBannerVoz();
     }
 
-    function setEstado(t) {
-      document.getElementById('estadoMicro').textContent = 'Estado micrófono: ' + t;
+    mostrarToast('Relato capturado con éxito.', 'ok');
+  };
+
+  r.onerror = e => {
+    console.warn("Speech error:", e);
+    const err = e.error || 'desconocido';
+    setEstado('Error: ' + err + ' — permití el micrófono y probá nuevamente.');
+    if (err === 'not-allowed') {
+      mostrarToast('Permiso de micrófono denegado. Habilitá el micrófono en tu navegador.', 'err', 4500);
+    } else {
+      mostrarToast('Error de micrófono: ' + err, 'warn', 3000);
     }
+  };
 
-    // Grabación de Voz por Web Speech API
-    function grabar(solo) {
-      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SR) {
-        setEstado('Tu navegador no permite voz, usá Chrome y modo Manual.');
-        alert('Tu navegador no permite voz. Usá Chrome o modo Manual.');
-        return;
-      }
-      const r = new SR();
-      r.lang = 'es-AR';
-      setEstado('Escuchando... hablá ahora');
-
-      r.onresult = e => {
-        const texto = e.results[0][0].transcript;
-        setEstado('Entendido: ' + texto);
-        if (solo) {
-          alert('Te entendí: ' + texto);
-          return;
-        }
-        document.getElementById('relato').value = texto;
-        const low = texto.toLowerCase();
-
-        // Detección automática de Sucursal
-        const mS = low.match(/(sucursal|la)\s*(\d+)/);
-        if (mS) document.getElementById('quien').value = 'Sucursal La ' + mS[2];
-
-        // Detección automática de Equipo
-        if (low.includes('lunix') || low.includes('unix')) document.getElementById('equipo').value = 'Lunix';
-        if (low.includes('impresora')) document.getElementById('equipo').value = 'Impresora';
-
-        // Resumen de motivo
-        document.getElementById('motivo').value = texto.length > 110 ? texto.slice(0, 110) + '...' : texto;
-
-        // Detección de hora dicha en el relato
-        const mH = texto.match(/(ayer|hoy).*?(\d{1,2})(?::(\d{2}))?/);
-        if (mH) {
-          const hora = mH[2].padStart(2, '0') + ':' + (mH[3] || '00');
-          if (confirm('Detecté "' + mH[0] + '". ¿Uso esa hora (' + hora + ') en vez de la actual?')) {
-            let f = new Date();
-            if (mH[1] === 'ayer') f.setDate(f.getDate() - 1);
-            document.getElementById('fecha').value = f.toISOString().slice(0, 10);
-            document.getElementById('hora').value = hora;
-            document.getElementById('horaReal').textContent = hora + ' (dijiste: ' + mH[0] + ')';
-          }
-        }
-      };
-
-      r.onerror = e => {
-        setEstado('Error: ' + e.error + ' — permití el micrófono y probá de nuevo.');
-      };
-
-      r.start();
-      usarHoraActual();
+  r.onend = () => {
+    // Si no capturó nada, resetear estado
+    if (document.getElementById('estadoMicro').textContent.includes('Escuchando')) {
+      setEstado('Finalizado');
     }
+  };
 
-    // Generador de texto para compartir o copiar
-    function textoTicket(t) {
-      return `TICKET ${t.numero} — ${t.estado} · Prioridad ${t.prioridad}
+  try {
+    r.start();
+  } catch(errStart) {
+    console.warn("No se pudo iniciar reconocimiento de voz:", errStart);
+  }
+}
+
+// Generador de texto formateado para compartir
+function textoTicket(t) {
+  return `TICKET ${t.numero} — ${t.estado} · Prioridad ${t.prioridad}
 Fecha: ${t.fecha} · Hora: ${t.hora}
-Quién llamó / Sucursal: ${t.quien}
-Equipo: ${t.equipo}
-Motivo / Problema: ${t.motivo}
-Diagnóstico / Qué se constató: ${t.diagnostico || 'A constatar'}
+Quién llamó / Sucursal: ${t.quien || 'No especificado'}
+Equipo: ${t.equipo || 'No especificado'}
+Motivo / Problema: ${t.motivo || 'No especificado'}
+Diagnóstico: ${t.diagnostico || 'A constatar'}
 Relato: ${t.relato}`;
-    }
+}
 
-    // Renderizado de lista de tickets
-    function render() {
-      const q = (document.getElementById('buscar').value || '').toLowerCase();
-      const f = document.getElementById('filtro').value;
-      const list = document.getElementById('lista');
-      list.innerHTML = '';
+// =========================================================================================
+// 7. RENDERIZADO DE TICKETS CON ACCIONES TÁCTILES RÁPIDAS
+// =========================================================================================
+function render() {
+  const q = (document.getElementById('buscar').value || '').toLowerCase().trim();
+  const f = document.getElementById('filtro').value;
+  const list = document.getElementById('lista');
+  const contador = document.getElementById('contadorTickets');
+  list.innerHTML = '';
 
-      const filtrados = tickets.filter(t => (!f || t.estado === f) && textoTicket(t).toLowerCase().includes(q));
+  const filtrados = (tickets || []).filter(t => {
+    const cumpleFiltro = !f || t.estado === f;
+    const cumpleBusqueda = !q || textoTicket(t).toLowerCase().includes(q);
+    return cumpleFiltro && cumpleBusqueda;
+  });
 
-      filtrados.forEach(t => {
-        const d = document.createElement('div');
-        d.className = 'ticket';
-        d.innerHTML = `
-      <b>${t.numero}</b> <span class="pill">${t.estado} · ${t.prioridad}</span><br>
-      <b>${t.fecha} · ${t.hora}</b> — ${t.quien} — ${t.equipo}<br>
-      <b>Motivo:</b> ${t.motivo}<br>
-      <small>${t.relato}</small>
+  if (contador) {
+    contador.textContent = `${filtrados.length} ${filtrados.length === 1 ? 'ticket' : 'tickets'}`;
+  }
+
+  if (filtrados.length === 0) {
+    list.innerHTML = `
+      <div style="text-align:center; padding: 28px 12px; color: #6b7280;">
+        <p style="font-size: 28px; margin: 0 0 6px;">📋</p>
+        <b>No hay tickets que coincidan</b>
+        <p class="muted" style="margin: 4px 0 0;">Cambiá el filtro o grabá un nuevo ticket.</p>
+      </div>
+    `;
+    return;
+  }
+
+  filtrados.forEach(t => {
+    const d = document.createElement('div');
+    d.className = 'ticket';
+
+    const estadoClase = t.estado === 'Resuelto' ? 'resuelto' : (t.estado === 'En curso' ? 'en-curso' : 'pendiente');
+    const badgeOffline = t._pendienteSincro ? `<span class="pill sincro-warn" title="Guardado solo en el celular">⚠️ Solo Local</span>` : '';
+
+    d.innerHTML = `
+      <div class="ticket-header">
+        <span class="ticket-num">${t.numero}</span>
+        <div>
+          <span class="pill ${estadoClase}">${t.estado} · ${t.prioridad}</span>
+          ${badgeOffline}
+        </div>
+      </div>
+      <div>
+        <b>📅 ${t.fecha} · ⏰ ${t.hora}</b> — <span style="color:#1d4ed8; font-weight:600;">${t.quien || 'Sin sucursal'}</span>
+      </div>
+      <div style="margin: 4px 0;">
+        <b>Equipo:</b> ${t.equipo || 'No especificado'}
+      </div>
+      <div>
+        <b>Motivo:</b> ${t.motivo || '—'}
+      </div>
+      <div style="margin-top: 4px; color:#4b5563; font-size:13px; max-height: 80px; overflow-y: auto;">
+        <i>${t.relato}</i>
+      </div>
       <div class="actions"></div>
     `;
 
-        const a = d.querySelector('.actions');
+    const a = d.querySelector('.actions');
 
-        // Botón Copiar
-        const b1 = document.createElement('button');
-        b1.textContent = '📋 Copiar';
-        b1.onclick = () => {
-          navigator.clipboard.writeText(textoTicket(t));
-          alert('Ticket ' + t.numero + ' copiado al portapapeles');
-        };
-
-        // Botón WhatsApp
-        const b2 = document.createElement('a');
-        b2.textContent = '💬 WhatsApp';
-        b2.href = 'https://wa.me/?text=' + encodeURIComponent(textoTicket(t));
-        b2.target = '_blank';
-
-        // Botón Mail
-        const b3 = document.createElement('a');
-        b3.textContent = '📧 Mail';
-        b3.href = 'mailto:?subject=' + encodeURIComponent('Ticket ' + t.numero + ' - ' + t.quien) + '&body=' + encodeURIComponent(textoTicket(t));
-
-        // Botón Marcar Resuelto
-        const b4 = document.createElement('button');
-        b4.textContent = '✅ Marcar Resuelto';
-        b4.onclick = async () => {
-          if (conexionEstado === 'ok' && supabaseClient && t._id) {
-            try {
-              const { error } = await supabaseClient.from('tickets').update({ estado: 'Resuelto' }).eq('id', t._id);
-              if (!error) {
-                cargar();
-                return;
-              }
-            } catch (e) {
-              console.warn("Error en update Supabase:", e);
-            }
-          }
-          // Actualización local
-          t.estado = 'Resuelto';
-          localStorage.setItem('tickets_ariel', JSON.stringify(tickets));
-          render();
-        };
-
-        // Botón Eliminar
-        const b5 = document.createElement('button');
-        b5.textContent = '🗑️ Eliminar';
-        b5.onclick = async () => {
-          if (!confirm('¿Eliminar ' + t.numero + '?')) return;
-          if (conexionEstado === 'ok' && supabaseClient && t._id) {
-            try {
-              const { error } = await supabaseClient.from('tickets').delete().eq('id', t._id);
-              if (!error) {
-                cargar();
-                return;
-              }
-            } catch (e) {
-              console.warn("Error en delete Supabase:", e);
-            }
-          }
-          // Eliminación local
-          tickets = tickets.filter(x => x !== t && x.numero !== t.numero);
-          localStorage.setItem('tickets_ariel', JSON.stringify(tickets));
-          actualizarSiguienteNumero();
-          render();
-        };
-
-        a.append(b1, b2, b3, b4, b5);
-        list.appendChild(d);
+    // Botón Copiar
+    const bCopy = document.createElement('button');
+    bCopy.innerHTML = '📋 Copiar';
+    bCopy.onclick = () => {
+      navigator.clipboard.writeText(textoTicket(t)).then(() => {
+        mostrarToast('Ticket ' + t.numero + ' copiado al portapapeles', 'ok');
+      }).catch(() => {
+        mostrarToast('No se pudo copiar automáticamente', 'warn');
       });
-    }
+    };
 
-    // Importar y unificar tickets desde un archivo tickets.json
-    function importarJSON() {
-      const fileInput = document.createElement('input');
-      fileInput.type = 'file';
-      fileInput.accept = '.json,application/json';
-      fileInput.onchange = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        try {
-          const text = await file.text();
-          const importados = JSON.parse(text);
-          if (!Array.isArray(importados)) {
-            alert('El archivo no tiene el formato esperado (debe ser una lista de tickets en formato JSON).');
-            return;
-          }
+    // Botón WhatsApp
+    const bWpp = document.createElement('a');
+    bWpp.innerHTML = '💬 WhatsApp';
+    bWpp.href = 'https://wa.me/?text=' + encodeURIComponent(textoTicket(t));
+    bWpp.target = '_blank';
+    bWpp.rel = 'noopener noreferrer';
 
-          let agregados = 0;
-          let existentes = 0;
+    // Botón Mail
+    const bMail = document.createElement('a');
+    bMail.innerHTML = '📧 Mail';
+    bMail.href = 'mailto:?subject=' + encodeURIComponent('Ticket ' + t.numero + ' - ' + t.quien) + '&body=' + encodeURIComponent(textoTicket(t));
 
-          for (const item of importados) {
-            if (!item.numero || !item.fecha || !item.hora) continue;
+    // Botón Editar
+    const bEdit = document.createElement('button');
+    bEdit.innerHTML = '✏️ Editar';
+    bEdit.onclick = () => editarTicket(t);
 
-            // Verificar si el ticket ya existe en la lista
-            const yaExiste = tickets.some(x => x.numero === item.numero);
-            if (yaExiste) {
-              existentes++;
-              continue;
-            }
-
-            const ticketNuevo = {
-              numero: item.numero,
-              fecha: item.fecha,
-              hora: String(item.hora).slice(0, 5),
-              quien: item.quien || '',
-              equipo: item.equipo || '',
-              motivo: item.motivo || '',
-              diagnostico: item.diagnostico || 'A constatar',
-              estado: item.estado || 'Pendiente',
-              prioridad: item.prioridad || 'Media',
-              relato: item.relato || ''
-            };
-
-            if (conexionEstado === 'ok' && supabaseClient) {
-              const { error } = await supabaseClient.from('tickets').insert([ticketNuevo]);
-              if (!error) agregados++;
-            } else {
-              tickets.push(ticketNuevo);
-              agregados++;
-            }
-          }
-
-          localStorage.setItem('tickets_ariel', JSON.stringify(tickets));
-          alert(`✅ Proceso finalizado:\n- Agregados a Supabase: ${agregados}\n- Ya existentes (no se duplicaron): ${existentes}`);
-          cargar();
-        } catch (errJson) {
-          alert('Error al leer el archivo JSON: ' + errJson.message);
-        }
-      };
-      fileInput.click();
-    }
-
-    // Exportar y descargar copia de tickets.json
-    function exportarJSON() {
-      if (!tickets || tickets.length === 0) {
-        alert('No hay tickets guardados para exportar.');
+    // Botón Marcar Resuelto
+    const bResuelto = document.createElement('button');
+    bResuelto.innerHTML = '✅ Resuelto';
+    bResuelto.onclick = async () => {
+      if (t.estado === 'Resuelto') {
+        mostrarToast('El ticket ya está marcado como Resuelto', 'info');
         return;
       }
-      const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(tickets, null, 2));
-      const dlAnchor = document.createElement('a');
-      dlAnchor.setAttribute('href', dataStr);
-      dlAnchor.setAttribute('download', 'tickets.json');
-      dlAnchor.click();
-    }
 
-    // Iniciar carga al abrir
-    cargar();
-  </script>
+      if (conexionEstado === 'ok' && t._id) {
+        try {
+          if (supabaseClient) {
+            const { error } = await supabaseClient.from('tickets').update({ estado: 'Resuelto' }).eq('id', t._id);
+            if (error) throw error;
+          } else {
+            await restFetch("/rest/v1/tickets?id=eq." + t._id, {
+              method: 'PATCH',
+              body: JSON.stringify({ estado: 'Resuelto' })
+            });
+          }
+          t.estado = 'Resuelto';
+          t._pendienteSincro = false;
+          mostrarToast('Ticket ' + t.numero + ' marcado como Resuelto en Supabase', 'ok');
+          render();
+          return;
+        } catch(e) {
+          console.warn("Fallo en update Supabase:", e);
+        }
+      }
+
+      // Actualización local
+      t.estado = 'Resuelto';
+      t._pendienteSincro = true;
+      localStorage.setItem('tickets_ariel', JSON.stringify(tickets));
+      mostrarToast('Ticket ' + t.numero + ' marcado como Resuelto localmente', 'ok');
+      render();
+    };
+
+    // Botón Eliminar con modal no bloqueante
+    const bDelete = document.createElement('button');
+    bDelete.className = 'btn-delete';
+    bDelete.innerHTML = '🗑️ Borrar';
+    bDelete.onclick = async () => {
+      const confirmacion = await mostrarConfirmacion({
+        titulo: '¿Eliminar ticket?',
+        mensaje: `¿Estás seguro de eliminar el ticket ${t.numero}? Esta acción no se puede deshacer.`,
+        textoOk: 'Sí, borrar',
+        textoCancelar: 'Cancelar',
+        destructivo: true
+      });
+
+      if (!confirmacion) return;
+
+      if (conexionEstado === 'ok' && t._id) {
+        try {
+          if (supabaseClient) {
+            const { error } = await supabaseClient.from('tickets').delete().eq('id', t._id);
+            if (error) throw error;
+          } else {
+            await restFetch("/rest/v1/tickets?id=eq." + t._id, { method: 'DELETE' });
+          }
+          mostrarToast('Ticket ' + t.numero + ' eliminado de Supabase', 'ok');
+        } catch(e) {
+          console.warn("Error al borrar en Supabase:", e);
+          mostrarToast('No se pudo borrar en la nube, se borra de este dispositivo', 'warn');
+        }
+      }
+
+      // Eliminar de memoria y local
+      tickets = tickets.filter(x => x !== t && x.numero !== t.numero);
+      localStorage.setItem('tickets_ariel', JSON.stringify(tickets));
+      actualizarSiguienteNumero();
+      render();
+    };
+
+    a.append(bCopy, bWpp, bMail, bEdit, bResuelto, bDelete);
+    list.appendChild(d);
+  });
+}
+
+// =========================================================================================
+// 8. REGISTRO DE SERVICE WORKER (PWA)
+// =========================================================================================
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => {
+        console.log('Service Worker registrado correctamente (PWA lista):', reg.scope);
+      })
+      .catch(err => {
+        console.warn('Error al registrar Service Worker:', err);
+      });
+  });
+}
+
+// Carga inicial
+cargar();
+</script>
 </body>
-
 </html>
